@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acoustic to Algorithmic: Music Theory & DSP Handbook</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0d1117;
+      color: #c9d1d9;
+    }
+    code, pre, .font-mono {
+      font-family: 'Fira Code', monospace;
+    }
+    /* Custom sleek scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0d1117;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #21262d;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #30363d;
+    }
+    .neon-border {
+      border-color: rgba(0, 242, 254, 0.25);
+    }
+    .neon-glow {
+      box-shadow: 0 0 20px -5px rgba(0, 242, 254, 0.15);
+    }
+    .purple-glow {
+      box-shadow: 0 0 25px -5px rgba(168, 85, 247, 0.15);
+    }
+    .piano-white {
+      background: linear-gradient(180deg, #f0f6fc 0%, #c9d1d9 100%);
+    }
+    .piano-white:active, .piano-white.active {
+      background: #38bdf8;
+      transform: translateY(2px);
+    }
+    .piano-black {
+      background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+    }
+    .piano-black:active, .piano-black.active {
+      background: #0284c7;
+      transform: translateY(2px);
+    }
+  </style>
+</head>
+<body class="selection:bg-cyan-500 selection:text-black">
+
+<div class="min-h-screen flex flex-col md:flex-row">
+  
+  <!-- Mobile Header -->
+  <header class="md:hidden sticky top-0 z-50 bg-[#161b22]/95 backdrop-blur border-b border-gray-800 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="w-3 h-3 rounded-full bg-cyan-400 animate-pulse"></span>
+      <h1 class="font-bold text-sm tracking-wide text-white uppercase">Harmonics & DSP</h1>
+    </div>
+    <button id="mobileMenuBtn" class="px-3 py-1.5 rounded bg-gray-800 text-gray-300 hover:text-white text-xs font-mono border border-gray-700">
+      ☰ Menu
+    </button>
+  </header>
+
+  <!-- Left Sidebar (Desktop & Mobile Drawer) -->
+  <aside id="sidebar" class="hidden md:flex flex-col w-72 lg:w-80 bg-[#161b22] border-r border-gray-800/80 sticky top-0 h-screen z-40 overflow-y-auto">
+    <div class="p-5 border-b border-gray-800">
+      <div class="flex items-center gap-2.5 mb-1">
+        <div class="w-3.5 h-3.5 rounded bg-gradient-to-tr from-cyan-400 to-fuchsia-500 shadow-md"></div>
+        <span class="font-extrabold text-base tracking-wider text-white font-mono">POLYPHONIC::DSP</span>
+      </div>
+      <p class="text-xs text-gray-400 font-normal">Piano, Guitar, Synth Theory & C#/Python Audio Engineering</p>
+      
+      <!-- Live Audio Engine Status Widget -->
+      <div class="mt-4 p-2.5 rounded-lg bg-[#0d1117] border border-gray-800 text-[11px] flex items-center justify-between">
+        <span class="text-gray-400 flex items-center gap-1.5">
+          <span id="audioEngineDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+          Engine: <span id="audioEngineState" class="text-gray-200">Suspended</span>
+        </span>
+        <button id="initAudioBtn" class="px-2 py-0.5 rounded bg-cyan-500/20 hover:bg-cyan-500/40 text-cyan-300 font-mono text-[10px] transition">
+          Arm WebAudio
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Scrollspy Links -->
+    <nav class="p-4 space-y-6 flex-1 text-sm">
+      <div>
+        <h3 class="text-[11px] uppercase tracking-wider text-cyan-400 font-semibold mb-2 font-mono">Interactive Rig</h3>
+        <ul class="space-y-1">
+          <li><a href="#interactive-synth" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-cyan-400 transition text-xs">🎹 Micro Synth & Drum Pad</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-[11px] uppercase tracking-wider text-cyan-400 font-semibold mb-2 font-mono">Section 1: Foundations</h3>
+        <ul class="space-y-1 text-xs">
+          <li><a href="#sec1-instruments" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-white transition">Triad of Instruments: Piano, Synth, Guitar</a></li>
+          <li><a href="#sec1-notation" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-white transition">Pitch Anatomy, Clefs & Ledger Lines</a></li>
+          <li><a href="#sec1-weird-notes" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-white transition">Weird Notes, Microtones & Enharmonics</a></li>
+          <li><a href="#sec1-translation" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-white transition">Cross-Instrument Voice Leading</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-[11px] uppercase tracking-wider text-fuchsia-400 font-semibold mb-2 font-mono">Section 2: Curriculum</h3>
+        <ul class="space-y-1 text-xs">
+          <li><a href="#sec2-tier1" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-white transition">Tier 1: Fundamentals & Intervals</a></li>
+          <li><a href="#sec2-tier2" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-white transition">Tier 2: Modes, Extensions & Modulation</a></li>
+          <li><a href="#sec2-tier3" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-white transition">Tier 3: Advanced, Polyrhythms & Tritone</a></li>
+          <li><a href="#sec2-milestones" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-white transition">Mastery Drills & Diagnostic Tests</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-[11px] uppercase tracking-wider text-emerald-400 font-semibold mb-2 font-mono">Section 3: Production & Code</h3>
+        <ul class="space-y-1 text-xs">
+          <li><a href="#sec3-tools" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-white transition">DAWs & Hardware Synths (FL, Korg, 808)</a></li>
+          <li><a href="#sec3-code-synth" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-white transition">Subtractive Synth (Python & C#)</a></li>
+          <li><a href="#sec3-code-drums" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-white transition">Drum Sequencer Engine</a></li>
+          <li><a href="#sec3-code-mashup" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-white transition">Mashup, Beatmatch & Stem Mixer</a></li>
+          <li><a href="#sec3-code-master" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-white transition">Mastering & Dynamic Limiting DSP</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-[11px] uppercase tracking-wider text-amber-400 font-semibold mb-2 font-mono">Section 4: Experimental & Math</h3>
+        <ul class="space-y-1 text-xs">
+          <li><a href="#sec4-generative" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-white transition">Euclidean Beats & Markov Progressions</a></li>
+          <li><a href="#sec4-acoustics" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-white transition">Wavetable Folding & Dark Glitch Acoustics</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mb-2 font-mono">Section 5: References</h3>
+        <ul class="space-y-1 text-xs">
+          <li><a href="#sec5-references" class="block px-3 py-1.5 rounded text-gray-300 hover:bg-gray-800/80 hover:text-white transition">MIDI Tables, Frequencies & Libraries</a></li>
+        </ul>
+      </div>
+    </nav>
+    <div class="p-3 border-t border-gray-800 text-[11px] text-gray-500 font-mono text-center">
+      Single-File Offline Ready Engine
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-10 py-8 space-y-16">
+
+    <section id="interactive-synth" class="p-6 rounded-2xl bg-[#161b22] border border-cyan-500/30 neon-glow relative overflow-hidden">
+      <div class="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-40 h-40 bg-cyan-500/5 rounded-full blur-2xl pointer-events-none"></div>
+      
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-800 pb-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-xs font-mono mb-1">
+            <span>●</span> WebAudio DSP Lab
+          </div>
+          <h2 class="text-xl font-bold text-white tracking-tight">Interactive Polyphonic Synth & Drum Station</h2>
+          <p class="text-xs text-gray-400">Click keys or tap drum pads to audition harmonic theory in real-time.</p>
+        </div>
+        
+        <!-- Controls: Waveform and Cutoff -->
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="flex items-center gap-1 bg-[#0d1117] p-1 rounded-lg border border-gray-800 text-xs font-mono">
+            <span class="text-gray-400 px-1 text-[11px]">Wave:</span>
+            <button class="wave-btn active px-2 py-1 rounded bg-cyan-500 text-black font-semibold text-[11px]" data-wave="sine">Sine</button>
+            <button class="wave-btn px-2 py-1 rounded text-gray-300 hover:text-white text-[11px]" data-wave="sawtooth">Saw</button>
+            <button class="wave-btn px-2 py-1 rounded text-gray-300 hover:text-white text-[11px]" data-wave="square">Square</button>
+            <button class="wave-btn px-2 py-1 rounded text-gray-300 hover:text-white text-[11px]" data-wave="triangle">Tri</button>
+          </div>
+
+          <div class="flex items-center gap-2 bg-[#0d1117] px-3 py-1.5 rounded-lg border border-gray-800 text-xs">
+            <label for="filterCutoff" class="text-gray-400 font-mono text-[11px]">LP Filter:</label>
+            <input id="filterCutoff" type="range" min="200" max="8000" value="2800" class="w-20 sm:w-24 accent-cyan-400 cursor-pointer">
+            <span id="filterVal" class="text-cyan-400 font-mono text-[11px] w-12 text-right">2800Hz</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Synthesizer Keyboard (1 Octave + extension) -->
+      <div class="mt-6">
+        <div class="flex items-center justify-between text-xs text-gray-400 font-mono mb-2">
+          <span>PIANO REGISTER (C4 - E5)</span>
+          <span class="text-[11px] text-cyan-400">Harmonic Series: Click to Trigger</span>
+        </div>
+        <div class="relative flex select-none h-32 sm:h-40 rounded-xl overflow-hidden border border-gray-800 bg-[#0d1117] p-1">
+          <!-- Natural Keys -->
+          <div class="piano-white flex-1 rounded-sm text-gray-900 font-bold text-xs flex flex-col justify-end p-2 cursor-pointer shadow hover:bg-cyan-100 transition" data-freq="261.63" data-note="C4">C4</div>
+          <div class="piano-white flex-1 rounded-sm text-gray-900 font-bold text-xs flex flex-col justify-end p-2 cursor-pointer shadow hover:bg-cyan-100 transition" data-freq="293.66" data-note="D4">D4</div>
+          <div class="piano-white flex-1 rounded-sm text-gray-900 font-bold text-xs flex flex-col justify-end p-2 cursor-pointer shadow hover:bg-cyan-100 transition" data-freq="329.63" data-note="E4">E4</div>
+          <div class="piano-white flex-1 rounded-sm text-gray-900 font-bold text-xs flex flex-col justify-end p-2 cursor-pointer shadow hover:bg-cyan-100 transition" data-freq="349.23" data-note="F4">F4</div>
+          <div class="piano-white flex-1 rounded-sm text-gray-900 font-bold text-xs flex flex-col justify-end p-2 cursor-pointer shadow hover:bg-cyan-100 transition" data-freq="392.00" data-note="G4">G4</div>
+          <div class="piano-white flex-1 rounded-sm text-gray-900 font-bold text-xs flex flex-col justify-end p-2 cursor-pointer shadow hover:bg-cyan-100 transition" data-freq="440.00" data-note="A4">A4</div>
+          <div class="piano-white flex-1 rounded-sm text-gray-900 font-bold text-xs flex flex-col justify-end p-2 cursor-pointer shadow hover:bg-cyan-100 transition" data-freq="493.88" data-note="B4">B4</div>
+          <div class="piano-white flex-1 rounded-sm text-gray-900 font-bold text-xs flex flex-col justify-end p-2 cursor-pointer shadow hover:bg-cyan-100 transition" data-freq="523.25" data-note="C5">C5</div>
+          <div class="piano-white flex-1 rounded-sm text-gray-900 font-bold text-xs flex flex-col justify-end p-2 cursor-pointer shadow hover:bg-cyan-100 transition" data-freq="587.33" data-note="D5">D5</div>
+          <div class="piano-white flex-1 rounded-sm text-gray-900 font-bold text-xs flex flex-col justify-end p-2 cursor-pointer shadow hover:bg-cyan-100 transition" data-freq="659.25" data-note="E5">E5</div>
+
+          <!-- Accidental Black Keys (Positioned Absolutely) -->
+          <div class="piano-black absolute top-1 h-20 sm:h-24 w-[6.5%] rounded-b-md text-gray-200 text-[10px] font-mono flex items-end justify-center pb-1 z-10 cursor-pointer shadow-lg left-[6.8%]" data-freq="277.18" data-note="C#4">C#</div>
+          <div class="piano-black absolute top-1 h-20 sm:h-24 w-[6.5%] rounded-b-md text-gray-200 text-[10px] font-mono flex items-end justify-center pb-1 z-10 cursor-pointer shadow-lg left-[16.8%]" data-freq="311.13" data-note="D#4">D#</div>
+          <div class="piano-black absolute top-1 h-20 sm:h-24 w-[6.5%] rounded-b-md text-gray-200 text-[10px] font-mono flex items-end justify-center pb-1 z-10 cursor-pointer shadow-lg left-[36.8%]" data-freq="369.99" data-note="F#4">F#</div>
+          <div class="piano-black absolute top-1 h-20 sm:h-24 w-[6.5%] rounded-b-md text-gray-200 text-[10px] font-mono flex items-end justify-center pb-1 z-10 cursor-pointer shadow-lg left-[46.8%]" data-freq="415.30" data-note="G#4">G#</div>
+          <div class="piano-black absolute top-1 h-20 sm:h-24 w-[6.5%] rounded-b-md text-gray-200 text-[10px] font-mono flex items-end justify-center pb-1 z-10 cursor-pointer shadow-lg left-[56.8%]" data-freq="466.16" data-note="A#4">A#</div>
+          <div class="piano-black absolute top-1 h-20 sm:h-24 w-[6.5%] rounded-b-md text-gray-200 text-[10px] font-mono flex items-end justify-center pb-1 z-10 cursor-pointer shadow-lg left-[76.8%]" data-freq="554.37" data-note="C#5">C#</div>
+          <div class="piano-black absolute top-1 h-20 sm:h-24 w-[6.5%] rounded-b-md text-gray-200 text-[10px] font-mono flex items-end justify-center pb-1 z-10 cursor-pointer shadow-lg left-[86.8%]" data-freq="622.25" data-note="D#5">D#</div>
+        </div>
+      </div>
+
+      <!-- Synthesized Drum Pads -->
+      <div class="mt-6 pt-5 border-t border-gray-800">
+        <div class="text-xs font-mono text-gray-400 mb-3 flex items-center justify-between">
+          <span>ANALOG DRUM SYNTHESIS ENGINE (TR-SPEC DSP)</span>
+          <span class="text-fuchsia-400">Zero Samples • Pure Formulaic Audio</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <button id="pad-kick" class="p-3.5 rounded-xl bg-gradient-to-b from-[#21262d] to-[#161b22] border border-gray-700 hover:border-fuchsia-500 text-left transition group active:scale-[0.98]">
+            <div class="text-[10px] font-mono text-fuchsia-400 group-hover:text-fuchsia-300">01 // OSC PITCH DROP</div>
+            <div class="font-bold text-white text-sm">808 / Kick</div>
+            <div class="text-[11px] text-gray-500 mt-1">150Hz → 40Hz sine sweep</div>
+          </button>
+          
+          <button id="pad-snare" class="p-3.5 rounded-xl bg-gradient-to-b from-[#21262d] to-[#161b22] border border-gray-700 hover:border-cyan-500 text-left transition group active:scale-[0.98]">
+            <div class="text-[10px] font-mono text-cyan-400 group-hover:text-cyan-300">02 // NOISE BURST + BODY</div>
+            <div class="font-bold text-white text-sm">909 Snare</div>
+            <div class="text-[11px] text-gray-500 mt-1">Tri body + filtered white noise</div>
+          </button>
+
+          <button id="pad-hihat" class="p-3.5 rounded-xl bg-gradient-to-b from-[#21262d] to-[#161b22] border border-gray-700 hover:border-amber-500 text-left transition group active:scale-[0.98]">
+            <div class="text-[10px] font-mono text-amber-400 group-hover:text-amber-300">03 // HP NOISE ENVELOPE</div>
+            <div class="font-bold text-white text-sm">Metallic Hat</div>
+            <div class="text-[11px] text-gray-500 mt-1">7kHz HPF + 45ms decay</div>
+          </button>
+
+          <button id="pad-sub" class="p-3.5 rounded-xl bg-gradient-to-b from-[#21262d] to-[#161b22] border border-gray-700 hover:border-emerald-500 text-left transition group active:scale-[0.98]">
+            <div class="text-[10px] font-mono text-emerald-400 group-hover:text-emerald-300">04 // SUB BASS DRONE</div>
+            <div class="font-bold text-white text-sm">32Hz Sub Boom</div>
+            <div class="text-[11px] text-gray-500 mt-1">Pure sine low resonance</div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec1-instruments" class="space-y-6">
+      <div class="border-b border-gray-800 pb-3">
+        <span class="text-xs font-mono text-cyan-400 tracking-wider uppercase font-semibold">Section 01</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">Instrument Fundamentals & Notation Anatomy</h2>
+        <p class="text-gray-400 text-sm mt-1">Deconstructing how the same frequency manifests on Piano keys, Synthesizer modules, and Guitar frets.</p>
+      </div>
+
+      <!-- 3-Way Instrument Architecture Breakdown -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <!-- Piano Card -->
+        <div class="p-5 rounded-xl bg-[#161b22] border border-gray-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <span class="p-1 rounded bg-cyan-950 text-cyan-400 text-xs">🎹</span> Piano
+              </h3>
+              <span class="text-[11px] font-mono text-gray-400">Linear / Absolute</span>
+            </div>
+            <p class="text-xs leading-relaxed text-gray-300">
+              The acoustic piano is inherently <strong>linear</strong>. Every unique key represents exactly one physical string group tuned to an absolute pitch (A0 at 27.5 Hz to C8 at 4186 Hz).
+            </p>
+            <ul class="mt-3 space-y-1.5 text-xs text-gray-400 list-disc list-inside">
+              <li>Interval distance directly matches geometric distance (e.g., an octave is always the span of 8 white keys).</li>
+              <li>Two-hand polyphony enables dense 10-note simultaneous clusters and wide open-spaced shell voicings.</li>
+              <li>Pitch is non-bendable (fixed 12-TET temperaments unless prepared).</li>
+            </ul>
+          </div>
+          <div class="mt-4 pt-3 border-t border-gray-800 text-[11px] font-mono text-cyan-400">
+            Strength: Visual transparency of chords and stacked tertian harmony.
+          </div>
+        </div>
+
+        <!-- Synthesizer Card -->
+        <div class="p-5 rounded-xl bg-[#161b22] border border-gray-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <span class="p-1 rounded bg-purple-950 text-purple-400 text-xs">🎛️</span> Synthesizer
+              </h3>
+              <span class="text-[11px] font-mono text-gray-400">Continuous / Timbral</span>
+            </div>
+            <p class="text-xs leading-relaxed text-gray-300">
+              Synthesizers detach pitch from physical resonance. Pitch is defined by a <strong>Voltage-Controlled Oscillator (VCO)</strong> or Digital Phase Accumulator modulated across time.
+            </p>
+            <ul class="mt-3 space-y-1.5 text-xs text-gray-400 list-disc list-inside">
+              <li><strong>Oscillators (OSC):</strong> Raw waveforms rich with harmonic partials (Saw, Square/Pulse, Triangle, Sine).</li>
+              <li><strong>Filters (VCF):</strong> Dynamic subtractive shaping (e.g. 24dB/oct resonant ladder filters).</li>
+              <li><strong>Envelopes & LFOs:</strong> ADSR control of amplitude and cutoff; microtonal continuous portamento.</li>
+            </ul>
+          </div>
+          <div class="mt-4 pt-3 border-t border-gray-800 text-[11px] font-mono text-purple-400">
+            Strength: Infinitely variable timbre, continuous pitch glide & overtone synthesis.
+          </div>
+        </div>
+
+        <!-- Guitar Card -->
+        <div class="p-5 rounded-xl bg-[#161b22] border border-gray-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <span class="p-1 rounded bg-amber-950 text-amber-400 text-xs">🎸</span> Guitar
+              </h3>
+              <span class="text-[11px] font-mono text-gray-400">2-Dimensional Matrix</span>
+            </div>
+            <p class="text-xs leading-relaxed text-gray-300">
+              A 6-string guitar is a <strong>two-dimensional grid</strong> (Strings × Frets). The exact same middle C (C4 = 261.63 Hz) can be played in up to 5 distinct physical locations.
+            </p>
+            <ul class="mt-3 space-y-1.5 text-xs text-gray-400 list-disc list-inside">
+              <li>Standard Tuning: E2 - A2 - D3 - G3 - B3 - E4 (All 4ths except G to B which is a Major 3rd).</li>
+              <li>Transposable shapes: Move a barre chord up 2 frets for an instant whole-step modulation without changing finger shapes.</li>
+              <li>Expressive physical pitch bending, vibrato, and ghost-scratched percussive notes.</li>
+            </ul>
+          </div>
+          <div class="mt-4 pt-3 border-t border-gray-800 text-[11px] font-mono text-amber-400">
+            Strength: Movable geometric shapes and expressive micro-pitch tactile bends.
+          </div>
+        </div>
+      </div>
+
+      <div id="sec1-notation" class="p-6 rounded-xl bg-[#161b22] border border-gray-800 space-y-6">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <span>🎼</span> Pitch Notation, Clefs & The Full Ledger Continuum
+        </h3>
+        <p class="text-xs sm:text-sm text-gray-300 leading-relaxed">
+          Standard Western notation assigns pitch to 5 horizontal lines and 4 spaces. Clefs determine the reference point for the grid.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div class="p-4 rounded-lg bg-[#0d1117] border border-gray-800">
+            <h4 class="font-bold text-cyan-400 font-mono text-sm mb-1">Treble Clef (G Clef)</h4>
+            <p class="text-gray-400 mb-2">Curved spiral targets line 2 from bottom: <strong>G4 (392.00 Hz)</strong>.</p>
+            <p class="text-gray-300">Lines: E4, G4, B4, D5, F5.<br>Spaces: F4, A4, C5, E5.<br>Primary domain for Piano Right Hand, Guitar (transposed 1 octave lower), and Synth Leads.</p>
+          </div>
+
+          <div class="p-4 rounded-lg bg-[#0d1117] border border-gray-800">
+            <h4 class="font-bold text-fuchsia-400 font-mono text-sm mb-1">Bass Clef (F Clef)</h4>
+            <p class="text-gray-400 mb-2">Two dots surround line 4 from bottom: <strong>F3 (174.61 Hz)</strong>.</p>
+            <p class="text-gray-300">Lines: G2, B2, D3, F3, A3.<br>Spaces: A2, C3, E3, G3.<br>Primary domain for Piano Left Hand, Bass Guitar, Synth Sub-basses and 808s.</p>
+          </div>
+
+          <div class="p-4 rounded-lg bg-[#0d1117] border border-gray-800">
+            <h4 class="font-bold text-amber-400 font-mono text-sm mb-1">C Clefs (Alto & Tenor)</h4>
+            <p class="text-gray-400 mb-2">Center notch pinpoints <strong>Middle C (C4 at 261.63 Hz)</strong>.</p>
+            <p class="text-gray-300">Alto places C4 on line 3 (Viola). Tenor places C4 on line 4 (Cello upper registers, Bassoon, Synth trombone solo lines).</p>
+          </div>
+        </div>
+
+        <!-- Ledger Lines Diagram & Table -->
+        <div class="p-4 rounded-lg bg-[#0d1117] border border-gray-800">
+          <h4 class="font-bold text-white text-xs font-mono uppercase mb-2 text-cyan-300">Ledger Lines: Bridging Grand Staff & Extreme Registers</h4>
+          <p class="text-xs text-gray-300 mb-3">
+            Middle C (C4) sits exactly between the Bass and Treble clefs as a single ledger line (one line below the Treble stave, or one line above the Bass stave).
+          </p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono border-collapse">
+              <thead>
+                <tr class="border-b border-gray-700 text-gray-400">
+                  <th class="py-2">Note</th>
+                  <th>Clef Location</th>
+                  <th>Ledger Line Description</th>
+                  <th>Freq (Hz)</th>
+                  <th>Instrument Register Example</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-800 text-gray-300">
+                <tr>
+                  <td class="py-2 font-bold text-cyan-400">E2</td>
+                  <td>Bass Clef</td>
+                  <td>3 ledger lines below stave</td>
+                  <td>82.41 Hz</td>
+                  <td>Low E string on standard Guitar; deep piano fundamental</td>
+                </tr>
+                <tr>
+                  <td class="py-2 font-bold text-white">C3</td>
+                  <td>Bass Clef</td>
+                  <td>Space 2 inside stave</td>
+                  <td>130.81 Hz</td>
+                  <td>Piano left hand root; Guitar 5th string 3rd fret</td>
+                </tr>
+                <tr>
+                  <td class="py-2 font-bold text-amber-400">C4 (Middle C)</td>
+                  <td>Grand Staff</td>
+                  <td>1 ledger line below Treble / above Bass</td>
+                  <td>261.63 Hz</td>
+                  <td>Piano center anchor; Guitar 2nd string 1st fret</td>
+                </tr>
+                <tr>
+                  <td class="py-2 font-bold text-white">A4 (Concert Pitch)</td>
+                  <td>Treble Clef</td>
+                  <td>Space 2 inside stave</td>
+                  <td>440.00 Hz</td>
+                  <td>Global tuning standard; Guitar 1st string 5th fret</td>
+                </tr>
+                <tr>
+                  <td class="py-2 font-bold text-fuchsia-400">C6 (Soprano C)</td>
+                  <td>Treble Clef</td>
+                  <td>2 ledger lines above stave</td>
+                  <td>1046.50 Hz</td>
+                  <td>Upper guitar fretboard (1st string 20th fret); soaring synth lead</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="sec1-weird-notes" class="p-6 rounded-xl bg-[#161b22] border border-gray-800 space-y-6">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <span>⚡</span> "Weird" Notes, Enharmonics & Microtonal Anomalies
+          </h3>
+          <span class="text-xs px-2 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30 font-mono">Advanced Pitch Logic</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs sm:text-sm">
+          <!-- Enharmonic Equivalents -->
+          <div class="p-4 rounded-lg bg-[#0d1117] border border-gray-800 space-y-3">
+            <h4 class="font-bold text-cyan-300 font-mono text-xs uppercase">Why E#, B#, C♭ and F♭ Exist</h4>
+            <p class="text-gray-300 text-xs leading-relaxed">
+              Beginners ask: <em>"Why call it E# if it's just F?"</em> In tonal harmony, every scale degree must possess a distinct letter name. 
+            </p>
+            <div class="bg-gray-900 p-3 rounded border border-gray-800 font-mono text-[11px] text-gray-300 space-y-1">
+              <p><strong class="text-white">Example 1: C# Major Scale</strong></p>
+              <p class="text-cyan-400">C# - D# - E# - F# - G# - A# - B#</p>
+              <p class="text-gray-400">If you spelled E# as "F", you would have two Fs (F and F#) and NO E note! Notation readability breaks instantly.</p>
+              <div class="mt-2 pt-2 border-t border-gray-800">
+                <p><strong class="text-white">Example 2: A-flat Minor (A♭ Minor)</strong></p>
+                <p class="text-fuchsia-400">A♭ - B♭ - C♭ - D♭ - E♭ - F♭ - G♭</p>
+                <p class="text-gray-400">C♭ is physically identical to key B, and F♭ is key E, but spelling them as B or E breaks musical syntax.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Double Sharps, Flats and Blue Notes -->
+          <div class="p-4 rounded-lg bg-[#0d1117] border border-gray-800 space-y-3">
+            <h4 class="font-bold text-fuchsia-300 font-mono text-xs uppercase">Double Accidentals & Microtonal Inflections</h4>
+            <p class="text-gray-300 text-xs leading-relaxed">
+              Accidentals modify pitch by full steps or non-twelve-tone intervals:
+            </p>
+            <ul class="space-y-2 text-xs text-gray-300">
+              <li>
+                <span class="font-mono text-white font-bold">Double Sharp (𝄪 / x):</span> Raises pitch by two semitones (1 whole tone). Essential in harmonic minor keys like G# minor, where the 7th leading tone is F𝄪 (sounds like G natural).
+              </li>
+              <li>
+                <span class="font-mono text-white font-bold">Double Flat (𝄫 / bb):</span> Lowers pitch by two semitones. Occurs in diminished 7th chords (e.g., C diminished 7 = C - E♭ - G♭ - B𝄫).
+              </li>
+              <li>
+                <span class="font-mono text-cyan-300 font-bold">Blue Notes & Quarter Tones (d / 𝄵):</span> 
+                Guitarists bend the minor 3rd up ~50 cents toward the major 3rd ("neutral 3rd"). Synths replicate this via pitch-wheel micro-tuning.
+              </li>
+              <li>
+                <span class="font-mono text-amber-300 font-bold">Ghost Notes (x):</span> Percussive rhythmic pulses with indeterminate pitch, executed on guitar by muting strings, or on synth via click-transient zero-pitch envelopes.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Cross-Instrument Translation Tip Box -->
+        <div id="sec1-translation" class="p-4 rounded-lg bg-cyan-950/20 border border-cyan-500/30 text-xs">
+          <h4 class="font-bold text-cyan-300 font-mono mb-1 flex items-center gap-1.5">
+            <span>💡</span> Cross-Instrument Translation & Voicing Strategy
+          </h4>
+          <p class="text-gray-300 leading-relaxed">
+            <strong>Piano Voicings vs. Guitar Voicings:</strong> Pianos easily play tight "close voicings" (e.g., C-E-G-B crammed within one octave). On guitar, physical fretboard span forces "drop-2" or "drop-3" open voicings (e.g., C-G-E-B spread across two octaves). 
+            <br><br>
+            <strong>Synth Masking Caution:</strong> If a synthesizer patch utilizes heavy distortion or rich unison saw waves (supersaw), playing close-voiced chords in the low register creates catastrophic frequency intermodulation (mud). Shift complex extensions to upper octaves and keep the fundamental mono-voiced below 250 Hz.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec2-tier1" class="space-y-6">
+      <div class="border-b border-gray-800 pb-3">
+        <span class="text-xs font-mono text-fuchsia-400 tracking-wider uppercase font-semibold">Section 02</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">Structured Lessons & Mastery Curriculum</h2>
+        <p class="text-gray-400 text-sm mt-1">A rigorous roadmap progressing from fundamental intervals to tritone substitutions, modal interchange, and generative composition.</p>
+      </div>
+
+      <!-- Curriculum Tiers -->
+      <div class="space-y-6">
+        
+        <!-- Tier 1 -->
+        <div class="p-6 rounded-xl bg-[#161b22] border border-gray-800 relative">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-mono text-xs font-bold">TIER 1</span>
+              <h3 class="text-lg font-bold text-white">The Atomic Foundation (Zero to Functional Fluency)</h3>
+            </div>
+            <span class="text-xs text-gray-400 font-mono">Duration: 4-6 Weeks</span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 text-xs">
+            <div class="p-4 rounded bg-[#0d1117] border border-gray-800">
+              <h4 class="font-bold text-white mb-2 text-cyan-300">1. Core Theory & Intervals</h4>
+              <p class="text-gray-300 mb-2">Semitones (half-steps) and Whole-tones. Memorize the 12 chromatic intervals:</p>
+              <ul class="text-gray-400 space-y-1 font-mono text-[11px]">
+                <li>m2 (1 semitone), M2 (2 semitones)</li>
+                <li>m3 (3), M3 (4) → Triad definers</li>
+                <li>P4 (5), Tritone / d5 (6), P5 (7)</li>
+                <li>m6 (8), M6 (9), m7 (10), M7 (11), Octave (12)</li>
+              </ul>
+            </div>
+
+            <div class="p-4 rounded bg-[#0d1117] border border-gray-800">
+              <h4 class="font-bold text-white mb-2 text-cyan-300">2. Triads & Major/Minor Scales</h4>
+              <p class="text-gray-300 mb-2">The Major Scale Formula: <strong class="font-mono text-white">W - W - H - W - W - W - H</strong>.</p>
+              <p class="text-gray-300 mb-2">Diatonic Triads in Major (C Major Example):</p>
+              <p class="font-mono text-[11px] text-cyan-400">I (C), ii (Dm), iii (Em), IV (F), V (G), vi (Am), vii° (Bdim)</p>
+              <p class="text-gray-400 text-[11px] mt-2">Harmonic Minor Formula: Flat 3, Flat 6, but natural 7th for leading tone drive.</p>
+            </div>
+
+            <div class="p-4 rounded bg-[#0d1117] border border-gray-800">
+              <h4 class="font-bold text-white mb-2 text-cyan-300">3. Rhythm & Metronome Synchronization</h4>
+              <p class="text-gray-300 mb-1">Time signatures (4/4 common time, 3/4 waltz, 6/8 compound).</p>
+              <p class="text-gray-400 text-[11px]">Quarter notes, eighths, sixteenths, and dotted rhythms. Practicing with metronome displaced to beats 2 and 4 to internalize backbeat swing.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tier 2 -->
+        <div id="sec2-tier2" class="p-6 rounded-xl bg-[#161b22] border border-gray-800">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/30 font-mono text-xs font-bold">TIER 2</span>
+              <h3 class="text-lg font-bold text-white">Intermediate: Modes, 7ths, & Modulation</h3>
+            </div>
+            <span class="text-xs text-gray-400 font-mono">Duration: 6-8 Weeks</span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 text-xs">
+            <div class="p-4 rounded bg-[#0d1117] border border-gray-800">
+              <h4 class="font-bold text-fuchsia-300 mb-2">1. The 7 Diatonic Modes</h4>
+              <p class="text-gray-300 text-xs mb-2">Modal character is defined by critical alterations:</p>
+              <ul class="text-gray-400 space-y-1 font-mono text-[11px]">
+                <li><strong class="text-white">Ionian:</strong> Major scale (1 2 3 4 5 6 7)</li>
+                <li><strong class="text-white">Dorian:</strong> Minor with raised 6th (Synthwave & Jazz)</li>
+                <li><strong class="text-white">Phrygian:</strong> Minor with flat 2nd (Metal & Dark Ambient)</li>
+                <li><strong class="text-white">Lydian:</strong> Major with raised 4th (Sci-fi Film score)</li>
+                <li><strong class="text-white">Mixolydian:</strong> Major with flat 7th (Blues/Funk)</li>
+                <li><strong class="text-white">Aeolian:</strong> Natural Minor (1 2 b3 4 5 b6 b7)</li>
+                <li><strong class="text-white">Locrian:</strong> Diminished triad root (1 b2 b3 4 b5 b6 b7)</li>
+              </ul>
+            </div>
+
+            <div class="p-4 rounded bg-[#0d1117] border border-gray-800">
+              <h4 class="font-bold text-fuchsia-300 mb-2">2. 7th & Extended Chords</h4>
+              <p class="text-gray-300 text-xs mb-2">Four-note harmonies that unlock professional depth:</p>
+              <ul class="text-gray-400 space-y-1 font-mono text-[11px]">
+                <li><strong>Maj7:</strong> Root + M3 + P5 + M7 (Lush, dream pop)</li>
+                <li><strong>7 (Dominant):</strong> Root + M3 + P5 + m7 (Tension, blues)</li>
+                <li><strong>m7:</strong> Root + m3 + P5 + m7 (Smooth R&B, Lo-Fi)</li>
+                <li><strong>m7♭5:</strong> Half-diminished (Minor ii-V-i driver)</li>
+                <li><strong>Extensions:</strong> 9ths, 11ths, 13ths stacked over root.</li>
+              </ul>
+            </div>
+
+            <div class="p-4 rounded bg-[#0d1117] border border-gray-800">
+              <h4 class="font-bold text-fuchsia-300 mb-2">3. Modulation & Circle of Fifths</h4>
+              <p class="text-gray-300 text-xs mb-2">Moving smoothly across key signatures:</p>
+              <p class="text-gray-400 text-[11px] leading-relaxed">
+                <strong>Pivot Chords:</strong> Using a chord common to both old and new keys (e.g. using Dm in C Major as the ii chord, transitioning it to a vi chord in F Major). 
+                Secondary dominants (V of V) to force harmonic momentum.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tier 3 -->
+        <div id="sec2-tier3" class="p-6 rounded-xl bg-[#161b22] border border-gray-800">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 font-mono text-xs font-bold">TIER 3</span>
+              <h3 class="text-lg font-bold text-white">Advanced: Tritone Sub, Negative Harmony & Polyrhythms</h3>
+            </div>
+            <span class="text-xs text-gray-400 font-mono">Mastery Level</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 rounded bg-[#0d1117] border border-gray-800 space-y-2">
+              <h4 class="font-bold text-amber-300 font-mono uppercase text-xs">Tritone Substitution & Altered Dominants</h4>
+              <p class="text-gray-300 text-xs leading-relaxed">
+                Any Dominant 7th chord can be swapped with another Dominant 7th located exactly 3 whole tones (a tritone) away. 
+                <br><br>
+                <strong>The Secret:</strong> G7 (G - B - D - F) shares the exact same 3rd and 7th interval (B and F) with D♭7 (D♭ - F - A♭ - C♭/B). The bass voice leads chromatically downwards: Dm7 → D♭7 → Cmaj7 instead of the classical Dm7 → G7 → Cmaj7.
+              </p>
+            </div>
+
+            <div class="p-4 rounded bg-[#0d1117] border border-gray-800 space-y-2">
+              <h4 class="font-bold text-amber-300 font-mono uppercase text-xs">Polyrhythms & Polymetric Sync</h4>
+              <p class="text-gray-300 text-xs leading-relaxed">
+                <strong>3 against 2 (Hemiola):</strong> Playing 3 evenly spaced pulses across the time span of 2 beats. Mnemonic: <em>"Not dif-fi-cult"</em>.
+                <br><br>
+                <strong>4 against 3:</strong> 4 hits against 3 beats. Mnemonic: <em>"Pass the god-damned but-ter"</em>. Crucial for polyphonic synthesizer arpeggiators layered against 4/4 industrial kick drums.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Milestones & Diagnostic Tests -->
+        <div id="sec2-milestones" class="p-5 rounded-xl bg-[#0d1117] border border-gray-800">
+          <h4 class="text-sm font-bold text-white uppercase font-mono text-cyan-400 mb-3">Diagnostic Benchmarks & Daily Practice Routines</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div class="border-l-2 border-cyan-500 pl-3">
+              <div class="font-bold text-white">Daily 20-Min Routine</div>
+              <p class="text-gray-400 mt-1">5m: Metronome scales in 3 keys.<br>5m: Blind chord inversion hopping.<br>5m: Ear interval transcription.<br>5m: Free improvisation over drone.</p>
+            </div>
+            <div class="border-l-2 border-fuchsia-500 pl-3">
+              <div class="font-bold text-white">Level 2 Test</div>
+              <p class="text-gray-400 mt-1">Modulate from E minor to B♭ major smoothly within 4 measures without awkward voice leaping.</p>
+            </div>
+            <div class="border-l-2 border-amber-500 pl-3">
+              <div class="font-bold text-white">Mastery Capstone</div>
+              <p class="text-gray-400 mt-1">Build an altered dominant progression on guitar, record into DAW, and write a generative C#/Python script to arpeggiate it in 7/8 time.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="sec3-tools" class="space-y-6">
+      <div class="border-b border-gray-800 pb-3">
+        <span class="text-xs font-mono text-emerald-400 tracking-wider uppercase font-semibold">Section 03</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">Digital Audio Workstations, Hardware & VSTs</h2>
+        <p class="text-gray-400 text-sm mt-1">The producer's modern PC toolkit: sequencing, physical analog synthesis, and industry DSP architectures.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+        <div class="p-4 rounded-xl bg-[#161b22] border border-gray-800">
+          <div class="font-bold text-white text-sm mb-1 text-emerald-400">FL Studio</div>
+          <p class="text-gray-400 mb-2">Pattern-centric workflow powerhouse.</p>
+          <ul class="text-gray-300 space-y-1 list-disc list-inside">
+            <li>World-class Piano Roll with microtonal slide notes and strum automation.</li>
+            <li>Step sequencer tailored for rapid trap/hip-hop hi-hat rolls.</li>
+            <li>Sytrus (FM synthesis) & Harmor (Additive resynthesis).</li>
+          </ul>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[#161b22] border border-gray-800">
+          <div class="font-bold text-white text-sm mb-1 text-cyan-400">Ableton Live</div>
+          <p class="text-gray-400 mb-2">Nonlinear performance & sound design.</p>
+          <ul class="text-gray-300 space-y-1 list-disc list-inside">
+            <li>Session View clip launching for improvisation and generative music.</li>
+            <li>Complex audio warping algorithms (Beats, Complex Pro).</li>
+            <li>Max for Live (visual DSP programming environment).</li>
+          </ul>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[#161b22] border border-gray-800">
+          <div class="font-bold text-white text-sm mb-1 text-fuchsia-400">Korg Hardware Synths</div>
+          <p class="text-gray-400 mb-2">Minilogue, Monologue, MS-20.</p>
+          <ul class="text-gray-300 space-y-1 list-disc list-inside">
+            <li>Real analog VCOs with true cross-modulation, sync, and ring modulation.</li>
+            <li>Built-in hardware oscilloscope to visualize wave-shaping in real time.</li>
+            <li>Microtuning support engineered in collaboration with Aphex Twin.</li>
+          </ul>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[#161b22] border border-gray-800">
+          <div class="font-bold text-white text-sm mb-1 text-amber-400">Iconic Drum Machines</div>
+          <p class="text-gray-400 mb-2">Roland TR-808, TR-909 & Modern VSTs.</p>
+          <ul class="text-gray-300 space-y-1 list-disc list-inside">
+            <li><strong>TR-808:</strong> Bridged-T resonant oscillator producing booming sub bass.</li>
+            <li><strong>TR-909:</strong> Punchy hybrid analog kick/snare + 6-bit sampled cymbals.</li>
+            <li>Vital & Serum: Wavetable engines with drag-and-drop modulation matrix.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Code Implementations with Interactive Tabs -->
+      <div id="sec3-code-synth" class="p-6 rounded-xl bg-[#161b22] border border-gray-800 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <span>💻</span> Engineering DSP: Python & C# Implementations
+            </h3>
+            <p class="text-xs text-gray-400">Full standalone algorithms for synthesizers, sequencers, mashups, and mastering chains.</p>
+          </div>
+          <!-- Global Language Selector -->
+          <div class="flex items-center gap-1 bg-[#0d1117] p-1 rounded-lg border border-gray-800 text-xs font-mono">
+            <button class="lang-tab-btn active px-3 py-1 rounded bg-cyan-500 text-black font-semibold" data-lang="python">Python</button>
+            <button class="lang-tab-btn px-3 py-1 rounded text-gray-300 hover:text-white" data-lang="csharp">C# (.NET)</button>
+          </div>
+        </div>
+
+        <!-- MODULE 1: Subtractive Synth -->
+        <div class="border border-gray-800 rounded-lg overflow-hidden bg-[#0d1117]">
+          <div class="bg-[#161b22] px-4 py-2 border-b border-gray-800 flex items-center justify-between">
+            <span class="text-xs font-mono text-cyan-400 font-bold">1. Subtractive Synthesizer with Resonant Lowpass Filter</span>
+            <button class="copy-btn text-xs font-mono text-gray-400 hover:text-white transition">Copy Code</button>
+          </div>
+          <div class="p-4 text-xs font-mono overflow-x-auto">
+            <!-- Python Block -->
+            <pre class="code-block python text-gray-300"><code># Python: Subtractive Synth with Resonant Biquad Filter (NumPy + Sounddevice)
+import numpy as np
+import sounddevice as sd
+
+SAMPLE_RATE = 44100
+
+def generate_sawtooth(freq: float, duration: float) -> np.ndarray:
+    """Generate a polyphonic bandlimited-approximated sawtooth wave."""
+    t = np.linspace(0, duration, int(SAMPLE_RATE * duration), endpoint=False)
+    # 2 * (t * freq - floor(1/2 + t * freq))
+    return 2.0 * (t * freq - np.floor(0.5 + t * freq))
+
+def apply_biquad_lowpass(audio: np.ndarray, cutoff: float, q: float = 2.0) -> np.ndarray:
+    """Standard Audio EQ Cookbook Resonant 2nd Order Lowpass Filter."""
+    w0 = 2.0 * np.pi * cutoff / SAMPLE_RATE
+    alpha = np.sin(w0) / (2.0 * q)
+    cos_w0 = np.cos(w0)
+
+    b0 = (1.0 - cos_w0) / 2.0
+    b1 = 1.0 - cos_w0
+    b2 = (1.0 - cos_w0) / 2.0
+    a0 = 1.0 + alpha
+    a1 = -2.0 * cos_w0
+    a2 = 1.0 - alpha
+
+    # Normalize coefficients
+    b = np.array([b0, b1, b2]) / a0
+    a = np.array([a0, a1, a2]) / a0
+
+    filtered = np.zeros_like(audio)
+    x1 = x2 = y1 = y2 = 0.0
+
+    for i in range(len(audio)):
+        x0 = audio[i]
+        y0 = b[0]*x0 + b[1]*x1 + b[2]*x2 - a[1]*y1 - a[2]*y2
+        filtered[i] = y0
+        x2, x1 = x1, x0
+        y2, y1 = y1, y0
+
+    return filtered
+
+# Synthesis test: A minor triad (A2, C3, E3) with 1200Hz Lowpass
+note_a2 = generate_sawtooth(110.0, 1.5)
+note_c3 = generate_sawtooth(130.81, 1.5)
+note_e3 = generate_sawtooth(164.81, 1.5)
+chord = (note_a2 + note_c3 + note_e3) / 3.0
+filtered_chord = apply_biquad_lowpass(chord, cutoff=1200.0, q=3.5)
+
+# Uncomment to play in desktop terminal:
+# sd.play(filtered_chord * 0.5, SAMPLE_RATE)
+# sd.wait()</code></pre>
+
+            <!-- C# Block -->
+            <pre class="code-block csharp hidden text-gray-300"><code>// C#: Subtractive Synthesizer Engine with NAudio or raw PCM buffer
+using System;
+
+public class SubtractiveSynth
+{
+    private const int SampleRate = 44100;
+
+    // Generate Band-limited Sawtooth buffer
+    public static float[] GenerateSawtooth(float freq, float durationSeconds)
+    {
+        int totalSamples = (int)(SampleRate * durationSeconds);
+        float[] buffer = new float[totalSamples];
+        float phase = 0f;
+        float phaseIncrement = freq / SampleRate;
+
+        for (int i = 0; i < totalSamples; i++)
+        {
+            buffer[i] = (2f * phase) - 1f; // Sawtooth range [-1.0, 1.0]
+            phase += phaseIncrement;
+            if (phase >= 1f) phase -= 1f;
+        }
+        return buffer;
+    }
+
+    // Direct Form I Resonant Biquad Filter
+    public static float[] ApplyLowpass(float[] input, float cutoffHz, float resonanceQ)
+    {
+        float w0 = 2f * MathF.PI * cutoffHz / SampleRate;
+        float alpha = MathF.Sin(w0) / (2f * resonanceQ);
+        float cosW0 = MathF.Cos(w0);
+
+        float b0 = (1f - cosW0) / 2f;
+        float b1 = 1f - cosW0;
+        float b2 = (1f - cosW0) / 2f;
+        float a0 = 1f + alpha;
+        float a1 = -2f * cosW0;
+        float a2 = 1f - alpha;
+
+        float[] output = new float[input.Length];
+        float x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+
+        for (int n = 0; n < input.Length; n++)
+        {
+            float x0 = input[n];
+            float y0 = (b0/a0)*x0 + (b1/a0)*x1 + (b2/a0)*x2 - (a1/a0)*y1 - (a2/a0)*y2;
+            output[n] = y0;
+
+            x2 = x1; x1 = x0;
+            y2 = y1; y1 = y0;
+        }
+        return output;
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- MODULE 2: Step Sequencer / Drum Machine -->
+        <div id="sec3-code-drums" class="border border-gray-800 rounded-lg overflow-hidden bg-[#0d1117]">
+          <div class="bg-[#161b22] px-4 py-2 border-b border-gray-800 flex items-center justify-between">
+            <span class="text-xs font-mono text-fuchsia-400 font-bold">2. 16-Step Procedural Drum Machine & Sequencer</span>
+            <button class="copy-btn text-xs font-mono text-gray-400 hover:text-white transition">Copy Code</button>
+          </div>
+          <div class="p-4 text-xs font-mono overflow-x-auto">
+            <!-- Python Block -->
+            <pre class="code-block python text-gray-300"><code># Python: Procedural TR-808 Style Drum Synthesizer & 16-Step Sequencer
+import numpy as np
+
+SAMPLE_RATE = 44100
+
+def synthesize_kick(pitch_start=150.0, pitch_end=45.0, duration=0.35):
+    """808 Kick: Exponential pitch sweep on sine + fast decay amplitude."""
+    t = np.linspace(0, duration, int(SAMPLE_RATE * duration), endpoint=False)
+    # Exponential pitch modulation
+    pitch_env = pitch_end + (pitch_start - pitch_end) * np.exp(-t * 25.0)
+    phase = 2.0 * np.pi * np.cumsum(pitch_env) / SAMPLE_RATE
+    amp_env = np.exp(-t * 9.0)
+    return np.sin(phase) * amp_env
+
+def synthesize_snare(duration=0.2):
+    """909 Snare: Mix of mid-body tone + filtered white noise burst."""
+    t = np.linspace(0, duration, int(SAMPLE_RATE * duration), endpoint=False)
+    # Tonal body
+    body = np.sin(2.0 * np.pi * 185.0 * t) * np.exp(-t * 20.0)
+    # Noise wire
+    noise = (np.random.rand(len(t)) * 2.0 - 1.0) * np.exp(-t * 15.0)
+    return (body * 0.4 + noise * 0.6)
+
+def build_16_step_sequence(bpm=120):
+    step_duration = (60.0 / bpm) / 4.0  # 16th note in seconds
+    step_samples = int(SAMPLE_RATE * step_duration)
+    total_samples = step_samples * 16
+    mix = np.zeros(total_samples)
+
+    # 16-step grid (1 = trigger, 0 = rest)
+    kick_pattern  = [1, 0, 0, 0,  1, 0, 0, 0,  1, 0, 0, 0,  1, 0, 0, 0] # 4-on-the-floor
+    snare_pattern = [0, 0, 0, 0,  1, 0, 0, 0,  0, 0, 0, 0,  1, 0, 0, 0] # Beats 2 and 4
+
+    kick = synthesize_kick()
+    snare = synthesize_snare()
+
+    for step in range(16):
+        start_idx = step * step_samples
+        if kick_pattern[step]:
+            end_idx = min(start_idx + len(kick), total_samples)
+            mix[start_idx:end_idx] += kick[:end_idx - start_idx]
+        if snare_pattern[step]:
+            end_idx = min(start_idx + len(snare), total_samples)
+            mix[start_idx:end_idx] += snare[:end_idx - start_idx]
+
+    # Peak normalization to prevent clipping
+    return mix / np.max(np.abs(mix))</code></pre>
+
+            <!-- C# Block -->
+            <pre class="code-block csharp hidden text-gray-300"><code>// C#: 16-Step Rhythm Sequencer Buffer Generator
+using System;
+
+public class DrumEngine
+{
+    private const int SampleRate = 44100;
+
+    public static float[] Synthesize808Kick(float duration = 0.35f)
+    {
+        int length = (int)(SampleRate * duration);
+        float[] buffer = new float[length];
+        float phase = 0f;
+
+        for (int i = 0; i < length; i++)
+        {
+            float t = (float)i / SampleRate;
+            float currentFreq = 45f + (150f - 45f) * MathF.Exp(-t * 25f);
+            phase += currentFreq / SampleRate;
+            float amplitude = MathF.Exp(-t * 9f);
+
+            buffer[i] = MathF.Sin(2f * MathF.PI * phase) * amplitude;
+        }
+        return buffer;
+    }
+
+    public static float[] RenderSequence(int[] pattern16, float bpm)
+    {
+        float stepSeconds = (60f / bpm) / 4f;
+        int stepSamples = (int)(SampleRate * stepSeconds);
+        float[] timeline = new float[stepSamples * 16];
+        float[] kick = Synthesize808Kick();
+
+        for (int step = 0; step < 16; step++)
+        {
+            if (pattern16[step] == 1)
+            {
+                int start = step * stepSamples;
+                for (int j = 0; j < kick.Length && (start + j) < timeline.Length; j++)
+                {
+                    timeline[start + j] += kick[j];
+                }
+            }
+        }
+        return timeline;
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- MODULE 3: Mashup & Beatmatching Script -->
+        <div id="sec3-code-mashup" class="border border-gray-800 rounded-lg overflow-hidden bg-[#0d1117]">
+          <div class="bg-[#161b22] px-4 py-2 border-b border-gray-800 flex items-center justify-between">
+            <span class="text-xs font-mono text-amber-400 font-bold">3. Beatmatch, Key Transposition & Mashup Script</span>
+            <button class="copy-btn text-xs font-mono text-gray-400 hover:text-white transition">Copy Code</button>
+          </div>
+          <div class="p-4 text-xs font-mono overflow-x-auto">
+            <!-- Python Block -->
+            <pre class="code-block python text-gray-300"><code># Python: Intelligent Mashup Engine (Librosa + SciPy)
+# Detects BPM, stretches tempo to sync, and pitch-shifts to matching musical key.
+import numpy as np
+import librosa
+
+def match_and_mashup(vocal_path: str, beat_path: str, target_bpm: float = 124.0):
+    """
+    1. Loads two tracks (e.g. acapella vocal and instrumental beat).
+    2. Estimates tempo and harmonic key using chromagrams.
+    3. Time-stretches and pitch-shifts vocal onto the beat grid.
+    """
+    # Load audio
+    y_vocal, sr_v = librosa.load(vocal_path, sr=44100)
+    y_beat, sr_b = librosa.load(beat_path, sr=44100)
+
+    # 1. Detect BPM
+    tempo_v, _ = librosa.beat.beat_track(y=y_vocal, sr=sr_v)
+    tempo_b, _ = librosa.beat.beat_track(y=y_beat, sr=sr_b)
+    
+    # 2. Time-Stretch vocal to target BPM without modifying pitch
+    rate_vocal = target_bpm / tempo_v
+    vocal_stretched = librosa.effects.time_stretch(y_vocal, rate=rate_vocal)
+
+    # 3. Time-Stretch beat to target BPM
+    rate_beat = target_bpm / tempo_b
+    beat_stretched = librosa.effects.time_stretch(y_beat, rate=rate_beat)
+
+    # 4. Transpose harmonic key (+3 semitones example or derived from chroma)
+    # librosa.effects.pitch_shift automatically preserves phase vocoder timing
+    vocal_pitch_matched = librosa.effects.pitch_shift(vocal_stretched, sr=sr_v, n_steps=3)
+
+    # 5. Layer and crossfade stems
+    min_len = min(len(vocal_pitch_matched), len(beat_stretched))
+    mashup = (beat_stretched[:min_len] * 0.7) + (vocal_pitch_matched[:min_len] * 0.8)
+
+    # Soft limiter clamp
+    return np.clip(mashup, -1.0, 1.0)</code></pre>
+
+            <!-- C# Block -->
+            <pre class="code-block csharp hidden text-gray-300"><code>// C#: Peak Alignment & Resampling Mixer using Math.Interpolation
+using System;
+
+public class MashupMixer
+{
+    // Linear Interpolation Time-Stretch / Resampler
+    public static float[] TimeStretchLinear(float[] source, float speedRatio)
+    {
+        int newLength = (int)(source.Length / speedRatio);
+        float[] result = new float[newLength];
+
+        for (int i = 0; i < newLength; i++)
+        {
+            float sourceIndex = i * speedRatio;
+            int baseIndex = (int)sourceIndex;
+            float frac = sourceIndex - baseIndex;
+
+            if (baseIndex + 1 < source.Length)
+            {
+                result[i] = source[baseIndex] * (1f - frac) + source[baseIndex + 1] * frac;
+            }
+            else
+            {
+                result[i] = source[baseIndex];
+            }
+        }
+        return result;
+    }
+
+    // Stem Mixer with Soft Saturation Limiter
+    public static float[] BlendStems(float[] instrumental, float[] vocals, float vocalGain = 1.1f)
+    {
+        int length = Math.Min(instrumental.Length, vocals.Length);
+        float[] mix = new float[length];
+
+        for (int i = 0; i < length; i++)
+        {
+            float rawSum = instrumental[i] + (vocals[i] * vocalGain);
+            // Hyperbolic tangent soft saturation prevents digital clipping
+            mix[i] = MathF.Tanh(rawSum);
+        }
+        return mix;
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- MODULE 4: Mastering & DSP Chain -->
+        <div id="sec3-code-master" class="border border-gray-800 rounded-lg overflow-hidden bg-[#0d1117]">
+          <div class="bg-[#161b22] px-4 py-2 border-b border-gray-800 flex items-center justify-between">
+            <span class="text-xs font-mono text-emerald-400 font-bold">4. Mastering DSP Chain: Parametric EQ + Brickwall Lookahead Limiter</span>
+            <button class="copy-btn text-xs font-mono text-gray-400 hover:text-white transition">Copy Code</button>
+          </div>
+          <div class="p-4 text-xs font-mono overflow-x-auto">
+            <!-- Python Block -->
+            <pre class="code-block python text-gray-300"><code># Python: Complete Mastering Chain (Low-cut, High-shelf, Soft-Knee Compressor & Limiter)
+import numpy as np
+
+def master_audio_chain(raw_track: np.ndarray, threshold_db=-1.5, ceiling_db=-0.2):
+    """
+    Professional finalization DSP:
+    1. DC Offset Removal (High-pass at 20Hz)
+    2. Dynamic Gain Boost
+    3. Fast Lookahead Peak Limiter with smooth envelope decay
+    """
+    # 1. DC Blocker
+    filtered = np.copy(raw_track)
+    for i in range(1, len(filtered)):
+        filtered[i] = raw_track[i] - raw_track[i-1] + 0.995 * filtered[i-1]
+
+    # Convert thresholds to linear amplitude
+    threshold = 10.0 ** (threshold_db / 20.0)
+    ceiling = 10.0 ** (ceiling_db / 20.0)
+
+    # 2. Lookahead Limiter Buffer (5ms lookahead = 220 samples at 44.1k)
+    lookahead_samples = 220
+    gain_reduction = np.ones(len(filtered))
+    
+    # Calculate peak envelope
+    envelope = 0.0
+    attack_coeff = np.exp(-1.0 / (44100 * 0.001))   # 1ms attack
+    release_coeff = np.exp(-1.0 / (44100 * 0.080))  # 80ms release
+
+    for i in range(len(filtered)):
+        env_in = abs(filtered[i])
+        if env_in > envelope:
+            envelope = env_in + attack_coeff * (envelope - env_in)
+        else:
+            envelope = env_in + release_coeff * (envelope - env_in)
+
+        if envelope > threshold:
+            gain_reduction[i] = threshold / envelope
+
+    # 3. Apply delayed gain reduction to prevent peak transient distortion
+    mastered = np.zeros_like(filtered)
+    for i in range(len(filtered)):
+        delayed_idx = max(0, i - lookahead_samples)
+        mastered[i] = filtered[i] * gain_reduction[delayed_idx]
+
+    # Final ceiling normalization
+    max_peak = np.max(np.abs(mastered))
+    if max_peak > ceiling:
+        mastered = (mastered / max_peak) * ceiling
+
+    return mastered</code></pre>
+
+            <!-- C# Block -->
+            <pre class="code-block csharp hidden text-gray-300"><code>// C#: Studio-Grade Brickwall Lookahead Mastering Limiter
+using System;
+
+public class StudioMasteringLimiter
+{
+    public static float[] ApplyMasterChain(float[] input, float ceilingDb = -0.3f)
+    {
+        float ceiling = MathF.Pow(10f, ceilingDb / 20f);
+        int sampleRate = 44100;
+        int lookahead = (int)(sampleRate * 0.005f); // 5ms lookahead
+        float[] output = new float[input.Length];
+
+        float envelope = 0f;
+        float release = MathF.Exp(-1f / (sampleRate * 0.060f)); // 60ms release
+
+        float[] gains = new float[input.Length];
+
+        // Envelope detection
+        for (int i = 0; i < input.Length; i++)
+        {
+            float absX = MathF.Abs(input[i]);
+            envelope = MathF.Max(absX, envelope * release);
+
+            gains[i] = envelope > ceiling ? (ceiling / envelope) : 1.0f;
+        }
+
+        // Apply lookahead delay compensation
+        for (int i = 0; i < input.Length; i++)
+        {
+            int delayedIndex = Math.Max(0, i - lookahead);
+            output[i] = input[i] * gains[delayedIndex];
+            
+            // Safety clip protection
+            if (output[i] > ceiling) output[i] = ceiling;
+            if (output[i] < -ceiling) output[i] = -ceiling;
+        }
+
+        return output;
+    }
+}</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="sec4-generative" class="space-y-6">
+      <div class="border-b border-gray-800 pb-3">
+        <span class="text-xs font-mono text-amber-400 tracking-wider uppercase font-semibold">Section 04</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">Deep Dive: Algorithmic, Glitch & Acoustic Physics</h2>
+        <p class="text-gray-400 text-sm mt-1">Generative logic, Euclidean polyrhythms, Markovian chord transitions, and the mathematics of wavefolding.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs sm:text-sm">
+        
+        <!-- Euclidean Rhythm Generator -->
+        <div class="p-5 rounded-xl bg-[#161b22] border border-gray-800 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-white text-base flex items-center gap-2">
+              <span class="text-amber-400">⚛️</span> Euclidean Rhythm Math
+            </h3>
+            <span class="text-[11px] font-mono text-cyan-400">Bjorklund's Algorithm</span>
+          </div>
+          <p class="text-gray-300 text-xs leading-relaxed">
+            Euclidean rhythms distribute <code class="text-cyan-300">k</code> pulses as evenly as mathematically possible across <code class="text-cyan-300">n</code> steps. This single algorithm generates nearly every fundamental world rhythm:
+          </p>
+          <div class="bg-[#0d1117] p-3 rounded-lg border border-gray-800 font-mono text-[11px] space-y-1.5">
+            <div class="flex justify-between border-b border-gray-800 pb-1">
+              <span class="text-white">E(3, 8) = [X . . X . . X .]</span>
+              <span class="text-amber-400">Tresillo (Cuban / Reggaeton)</span>
+            </div>
+            <div class="flex justify-between border-b border-gray-800 pb-1">
+              <span class="text-white">E(5, 8) = [X . X X . X X .]</span>
+              <span class="text-amber-400">Cinquillo / Habanera</span>
+            </div>
+            <div class="flex justify-between border-b border-gray-800 pb-1">
+              <span class="text-white">E(7, 12) = [X . X . X X . X . X . X]</span>
+              <span class="text-amber-400">West African Bell Pattern</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-white">E(4, 11) = [X . . X . . X . . X .]</span>
+              <span class="text-amber-400">Frank Zappa Metric Oddities</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Markov Chain Chord Progressions -->
+        <div class="p-5 rounded-xl bg-[#161b22] border border-gray-800 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-white text-base flex items-center gap-2">
+              <span class="text-purple-400">🎲</span> Stochastic Markov Progressions
+            </h3>
+            <span class="text-[11px] font-mono text-purple-400">Probabilistic Transitions</span>
+          </div>
+          <p class="text-gray-300 text-xs leading-relaxed">
+            Generative music systems model harmonic transitions as a 1st-order Markov chain. Instead of deterministic sequences, probabilities guide chord selection:
+          </p>
+          <div class="bg-[#0d1117] p-3 rounded-lg border border-gray-800 font-mono text-[11px] text-gray-300 space-y-1">
+            <p><span class="text-white">Current = I (Tonic):</span> 40% to IV, 40% to vi, 20% to ii</p>
+            <p><span class="text-white">Current = ii (Subdominant):</span> 80% to V, 20% to vii°</p>
+            <p><span class="text-white">Current = V (Dominant):</span> 75% to I (Cadence), 15% to vi (Deceptive), 10% to Tritone Sub (♭II)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wavefolder Math & Glitch Acoustics -->
+      <div id="sec4-acoustics" class="p-5 rounded-xl bg-[#161b22] border border-gray-800 space-y-4">
+        <h3 class="font-bold text-white text-base flex items-center gap-2">
+          <span>💥</span> West Coast Synthesis: Wavefolding & Distortion Mathematics
+        </h3>
+        <p class="text-xs sm:text-sm text-gray-300 leading-relaxed">
+          While traditional East Coast synthesis (Moog) removes frequencies with low-pass filters, West Coast synthesis (Buchla) adds rich overtone harmonics through mathematical folding. 
+          When an amplitude threshold is breached, instead of clipping flat, the signal inverts backwards.
+        </p>
+
+        <div class="p-3 bg-[#0d1117] rounded-lg border border-gray-800 font-mono text-xs text-cyan-300">
+          f(x) = | ( (x + 1) mod 4 ) - 2 | - 1
+        </div>
+        <p class="text-xs text-gray-400">
+          This non-linear trigonometric folding creates metallic, bell-like FM timbres, industrial clangs, and hyper-dense textures essential for dark ambient and breakcore production.
+        </p>
+      </div>
+    </section>
+
+    <section id="sec5-references" class="space-y-6">
+      <div class="border-b border-gray-800 pb-3">
+        <span class="text-xs font-mono text-cyan-400 tracking-wider uppercase font-semibold">Section 05</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">References, Cheatsheets & Open Resources</h2>
+        <p class="text-gray-400 text-sm mt-1">Quick-reference tables for MIDI note numbers, exact fundamental frequencies, guitar fretboard tuning registers, and essential reading.</p>
+      </div>
+
+      <!-- Frequency & MIDI Quick Lookup Table -->
+      <div class="p-6 rounded-xl bg-[#161b22] border border-gray-800 space-y-4">
+        <h3 class="text-sm font-bold text-white uppercase font-mono text-cyan-300">Concert Pitch & Fretboard Reference Table</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs font-mono border-collapse">
+            <thead>
+              <tr class="border-b border-gray-700 text-gray-400">
+                <th class="py-2.5">Note Name</th>
+                <th>MIDI Number</th>
+                <th>Frequency (Hz)</th>
+                <th>Wavelength (Air at 20°C)</th>
+                <th>Guitar String & Fret</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800 text-gray-300">
+              <tr>
+                <td class="py-2 font-bold text-emerald-400">E1 (Bass Sub)</td>
+                <td>28</td>
+                <td>41.20 Hz</td>
+                <td>832.5 cm</td>
+                <td>Standard 4-string Bass low open string</td>
+              </tr>
+              <tr>
+                <td class="py-2 font-bold text-cyan-400">E2 (Guitar Low E)</td>
+                <td>40</td>
+                <td>82.41 Hz</td>
+                <td>416.2 cm</td>
+                <td>String 6, Open</td>
+              </tr>
+              <tr>
+                <td class="py-2 font-bold text-cyan-400">A2</td>
+                <td>45</td>
+                <td>110.00 Hz</td>
+                <td>311.8 cm</td>
+                <td>String 5, Open</td>
+              </tr>
+              <tr>
+                <td class="py-2 font-bold text-cyan-400">D3</td>
+                <td>50</td>
+                <td>146.83 Hz</td>
+                <td>233.6 cm</td>
+                <td>String 4, Open</td>
+              </tr>
+              <tr>
+                <td class="py-2 font-bold text-cyan-400">G3</td>
+                <td>55</td>
+                <td>196.00 Hz</td>
+                <td>175.0 cm</td>
+                <td>String 3, Open</td>
+              </tr>
+              <tr>
+                <td class="py-2 font-bold text-cyan-400">B3</td>
+                <td>59</td>
+                <td>246.94 Hz</td>
+                <td>138.9 cm</td>
+                <td>String 2, Open</td>
+              </tr>
+              <tr>
+                <td class="py-2 font-bold text-amber-400">C4 (Middle C)</td>
+                <td>60</td>
+                <td>261.63 Hz</td>
+                <td>131.1 cm</td>
+                <td>String 2, Fret 1 / String 3, Fret 5</td>
+              </tr>
+              <tr>
+                <td class="py-2 font-bold text-cyan-400">E4 (Guitar High E)</td>
+                <td>64</td>
+                <td>329.63 Hz</td>
+                <td>104.1 cm</td>
+                <td>String 1, Open</td>
+              </tr>
+              <tr>
+                <td class="py-2 font-bold text-fuchsia-400">A4 (Tuning Reference)</td>
+                <td>69</td>
+                <td>440.00 Hz</td>
+                <td>77.9 cm</td>
+                <td>String 1, Fret 5</td>
+              </tr>
+              <tr>
+                <td class="py-2 font-bold text-white">C5</td>
+                <td>72</td>
+                <td>523.25 Hz</td>
+                <td>65.5 cm</td>
+                <td>String 1, Fret 8</td>
+              </tr>
+              <tr>
+                <td class="py-2 font-bold text-white">E5 (Fretboard Peak)</td>
+                <td>76</td>
+                <td>659.25 Hz</td>
+                <td>52.0 cm</td>
+                <td>String 1, Fret 12 (Octave harmonic)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Links, Documentation and Library Ecosystem -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+        <div class="p-4 rounded-xl bg-[#161b22] border border-gray-800 space-y-2">
+          <h4 class="font-bold text-white text-sm text-cyan-400">Python Audio Stack</h4>
+          <ul class="space-y-1.5 text-gray-300">
+            <li><a href="https://librosa.org/" target="_blank" class="hover:text-cyan-300 underline underline-offset-2">Librosa:</a> Music analysis, beat tracking & chroma.</li>
+            <li><a href="https://python-sounddevice.readthedocs.io/" target="_blank" class="hover:text-cyan-300 underline underline-offset-2">Sounddevice:</a> Low-latency real-time PortAudio bindings.</li>
+            <li><a href="https://scipy.org/" target="_blank" class="hover:text-cyan-300 underline underline-offset-2">SciPy Signal:</a> Biquad filters, FFTs, and window functions.</li>
+            <li><a href="https://github.com/mido/mido" target="_blank" class="hover:text-cyan-300 underline underline-offset-2">Mido:</a> Real-time MIDI object streaming.</li>
+          </ul>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[#161b22] border border-gray-800 space-y-2">
+          <h4 class="font-bold text-white text-sm text-purple-400">C# & .NET Audio Stack</h4>
+          <ul class="space-y-1.5 text-gray-300">
+            <li><a href="https://github.com/naudio/NAudio" target="_blank" class="hover:text-purple-300 underline underline-offset-2">NAudio:</a> Audio engine for playback, WASAPI, and VST hosting.</li>
+            <li><a href="https://github.com/jaime-olivares/csynth" target="_blank" class="hover:text-purple-300 underline underline-offset-2">CSCore:</a> High performance .NET audio library.</li>
+            <li><a href="https://github.com/filoe/cscore" target="_blank" class="hover:text-purple-300 underline underline-offset-2">MidiSharp:</a> Pure C# MIDI file assembler and event engine.</li>
+          </ul>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[#161b22] border border-gray-800 space-y-2">
+          <h4 class="font-bold text-white text-sm text-amber-400">Mastery Literature</h4>
+          <ul class="space-y-1.5 text-gray-300">
+            <li><span class="text-white">The Jazz Theory Book</span> - Mark Levine</li>
+            <li><span class="text-white">Designing Sound</span> - Andy Farnell (Procedural audio)</li>
+            <li><span class="text-white">The Computer Music Tutorial</span> - Curtis Roads</li>
+            <li><span class="text-white">Guitar Voicing System</span> - Mick Goodrick</li>
+          </ul>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Footer -->
+    <footer class="pt-8 pb-12 border-t border-gray-800 text-center text-xs text-gray-500 font-mono">
+      <p>© Polyphonic DSP & Music Theory Compendium • Offline-Ready Documentation</p>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  // Web Audio Context initialization
+  let audioCtx = null;
+  let activeOscillators = {};
+  let currentWaveform = 'sine';
+
+  const audioEngineDot = document.getElementById('audioEngineDot');
+  const audioEngineState = document.getElementById('audioEngineState');
+  const initAudioBtn = document.getElementById('initAudioBtn');
+  const filterSlider = document.getElementById('filterCutoff');
+  const filterValLabel = document.getElementById('filterVal');
+
+  // Master low-pass filter
+  let masterFilter = null;
+
+  function ensureAudioContext() {
+    if (!audioCtx) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContextClass();
+      
+      // Setup global master lowpass filter
+      masterFilter = audioCtx.createBiquadFilter();
+      masterFilter.type = 'lowpass';
+      masterFilter.frequency.setValueAtTime(parseFloat(filterSlider.value), audioCtx.currentTime);
+      masterFilter.Q.setValueAtTime(2.5, audioCtx.currentTime);
+      masterFilter.connect(audioCtx.destination);
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    updateEngineStatus();
+  }
+
+  function updateEngineStatus() {
+    if (audioCtx && audioCtx.state === 'running') {
+      audioEngineDot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+      audioEngineState.textContent = "Online (44.1kHz)";
+      audioEngineState.className = "text-emerald-400";
+    }
+  }
+
+  initAudioBtn.addEventListener('click', () => {
+    ensureAudioContext();
+  });
+
+  // Filter slider listener
+  filterSlider.addEventListener('input', (e) => {
+    const val = e.target.value;
+    filterValLabel.textContent = val + "Hz";
+    if (masterFilter && audioCtx) {
+      masterFilter.frequency.setTargetAtTime(parseFloat(val), audioCtx.currentTime, 0.02);
+    }
+  });
+
+  // Waveform selector buttons
+  const waveBtns = document.querySelectorAll('.wave-btn');
+  waveBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      waveBtns.forEach(b => {
+        b.classList.remove('bg-cyan-500', 'text-black', 'font-semibold');
+        b.classList.add('text-gray-300');
+      });
+      btn.classList.add('bg-cyan-500', 'text-black', 'font-semibold');
+      btn.classList.remove('text-gray-300');
+      currentWaveform = btn.getAttribute('data-wave');
+    });
+  });
+
+  // Play Tone function
+  function playNote(freq, noteName) {
+    ensureAudioContext();
+    if (!audioCtx) return;
+
+    // Avoid duplicate triggers
+    if (activeOscillators[noteName]) {
+      stopNote(noteName);
+    }
+
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    osc.type = currentWaveform;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+    // Fast Attack, sustain, smooth release
+    gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime + 0.04);
+
+    osc.connect(gainNode);
+    gainNode.connect(masterFilter);
+
+    osc.start();
+    activeOscillators[noteName] = { osc, gainNode };
+  }
+
+  function stopNote(noteName) {
+    if (!audioCtx || !activeOscillators[noteName]) return;
+    const { osc, gainNode } = activeOscillators[noteName];
+    gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+    gainNode.gain.setValueAtTime(gainNode.gain.value, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.12);
+    setTimeout(() => {
+      try {
+        osc.stop();
+        osc.disconnect();
+      } catch (e) {}
+    }, 150);
+    delete activeOscillators[noteName];
+  }
+
+  // Bind Piano Keys
+  const pianoKeys = document.querySelectorAll('[data-freq]');
+  pianoKeys.forEach(key => {
+    const freq = parseFloat(key.getAttribute('data-freq'));
+    const note = key.getAttribute('data-note');
+
+    key.addEventListener('mousedown', () => {
+      key.classList.add('active');
+      playNote(freq, note);
+    });
+    key.addEventListener('mouseup', () => {
+      key.classList.remove('active');
+      stopNote(note);
+    });
+    key.addEventListener('mouseleave', () => {
+      key.classList.remove('active');
+      stopNote(note);
+    });
+
+    // Mobile touch support
+    key.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      key.classList.add('active');
+      playNote(freq, note);
+    });
+    key.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      key.classList.remove('active');
+      stopNote(note);
+    });
+  });
+
+  // Drum Synthesizer Triggers
+  document.getElementById('pad-kick').addEventListener('click', () => {
+    ensureAudioContext();
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const now = audioCtx.currentTime;
+
+    osc.frequency.setValueAtTime(150, now);
+    osc.frequency.exponentialRampToValueAtTime(38, now + 0.25);
+
+    gain.gain.setValueAtTime(0.8, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.35);
+  });
+
+  document.getElementById('pad-snare').addEventListener('click', () => {
+    ensureAudioContext();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+
+    // Body tone
+    const osc = audioCtx.createOscillator();
+    const oscGain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(180, now);
+    oscGain.gain.setValueAtTime(0.4, now);
+    oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+    osc.connect(oscGain);
+    oscGain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.15);
+
+    // Noise wire
+    const bufferSize = audioCtx.sampleRate * 0.15;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+
+    const noiseFilter = audioCtx.createBiquadFilter();
+    noiseFilter.type = 'highpass';
+    noiseFilter.frequency.value = 1000;
+
+    const noiseGain = audioCtx.createGain();
+    noiseGain.gain.setValueAtTime(0.5, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(audioCtx.destination);
+    noise.start(now);
+  });
+
+  document.getElementById('pad-hihat').addEventListener('click', () => {
+    ensureAudioContext();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    const bufferSize = audioCtx.sampleRate * 0.06;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.value = 7500;
+
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.3, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+    noise.start(now);
+  });
+
+  document.getElementById('pad-sub').addEventListener('click', () => {
+    ensureAudioContext();
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const now = audioCtx.currentTime;
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(36, now);
+
+    gain.gain.setValueAtTime(0.9, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 1.3);
+  });
+
+  // Code Language Tabs (Python vs C#)
+  const langBtns = document.querySelectorAll('.lang-tab-btn');
+  langBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      langBtns.forEach(b => {
+        b.classList.remove('bg-cyan-500', 'text-black', 'font-semibold');
+        b.classList.add('text-gray-300');
+      });
+      btn.classList.add('bg-cyan-500', 'text-black', 'font-semibold');
+      btn.classList.remove('text-gray-300');
+
+      const targetLang = btn.getAttribute('data-lang');
+      document.querySelectorAll('.code-block').forEach(block => {
+        if (block.classList.contains(targetLang)) {
+          block.classList.remove('hidden');
+        } else {
+          block.classList.add('hidden');
+        }
+      });
+    });
+  });
+
+  // Copy Code Snippets
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const container = btn.closest('.border');
+      const activeCode = container.querySelector('.code-block:not(.hidden) code');
+      if (activeCode) {
+        const text = activeCode.innerText;
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          const originalText = btn.textContent;
+          btn.textContent = 'Copied!';
+          btn.classList.add('text-cyan-400');
+          setTimeout(() => {
+            btn.textContent = originalText;
+            btn.classList.remove('text-cyan-400');
+          }, 1800);
+        } catch (err) {
+          console.error('Copy fallback error', err);
+        }
+        document.body.removeChild(textarea);
+      }
+    });
+  });
+
+  // Mobile Menu Drawer Toggle
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const sidebar = document.getElementById('sidebar');
+  if (mobileMenuBtn && sidebar) {
+    mobileMenuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('hidden');
+      sidebar.classList.toggle('fixed');
+      sidebar.classList.toggle('inset-0');
+    });
+
+    // Close sidebar on item selection on mobile
+    sidebar.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 768) {
+          sidebar.classList.add('hidden');
+          sidebar.classList.remove('fixed', 'inset-0');
+        }
+      });
+    });
+  }
+</script>
+</body>
+</html>
